@@ -12,6 +12,11 @@
     "readyForLaunch": "Ready for launch.",
     "continue": "CONTINUE"
   },
+  "loginScreen": {
+    "forgetName": "Forget username?",
+    "forgetPassword": "Forget password?",
+    "login": "Log in"
+  },
   "demoScreen": {
     "howTo": "HOW TO",
     "title": "What’s In This Stack?",

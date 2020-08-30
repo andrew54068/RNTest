@@ -1,76 +1,96 @@
 import React from "react"
-import { View, Image, ViewStyle, TextStyle, ImageStyle, SafeAreaView } from "react-native"
+import { View, Image, ViewStyle, TextStyle, ImageStyle, SafeAreaView, ColorValue } from "react-native"
 import { useNavigation } from "@react-navigation/native"
 import { observer } from "mobx-react-lite"
 import { Button, Header, Screen, Text, Wallpaper } from "../../components"
 import { color, spacing, typography } from "../../theme"
-import { HelperText, TextInput } from 'react-native-paper';
-const bowserLogo = require("./bowser.png")
+import { HelperText, TextInput } from 'react-native-paper'
+import { Colors } from "react-native/Libraries/NewAppScreen"
+import { Theme } from "react-native-paper/lib/typescript/src/types"
+const binjiLogo = require("./BinjiLogo.png")
 
+const slate: ColorValue = "#3e5968"
+const cloudyBlue: ColorValue = "#aec5ce"
 const FULL: ViewStyle = { flex: 1 }
 const CONTAINER: ViewStyle = {
   backgroundColor: color.transparent,
   paddingHorizontal: spacing[4],
+  justifyContent: "flex-start",
 }
 const TEXT: TextStyle = {
   color: color.palette.white,
   fontFamily: typography.primary,
 }
-const BOLD: TextStyle = { fontWeight: "bold" }
+
+const INPUT_TEXT: ViewStyle = {
+  backgroundColor: null,
+  marginTop: spacing[5],
+  // borderColor: color.error
+}
+
+const INPUT_THEME: Theme = {
+  roundness: 50,
+  colors: {
+    primary: slate,
+    text: cloudyBlue,
+  }
+}
+
+const MEDIUM: TextStyle = { fontWeight: "600" }
+
 const HEADER: TextStyle = {
   paddingTop: spacing[3],
   paddingBottom: spacing[4] + spacing[1],
   paddingHorizontal: 0,
 }
-const HEADER_TITLE: TextStyle = {
-  ...TEXT,
-  ...BOLD,
-  fontSize: 12,
-  lineHeight: 15,
-  textAlign: "center",
-  letterSpacing: 1.5,
-}
-const TITLE_WRAPPER: TextStyle = {
-  ...TEXT,
-  textAlign: "center",
-}
-const TITLE: TextStyle = {
-  ...TEXT,
-  ...BOLD,
-  fontSize: 28,
-  lineHeight: 38,
-  textAlign: "center",
-}
-const ALMOST: TextStyle = {
-  ...TEXT,
-  ...BOLD,
-  fontSize: 26,
-  fontStyle: "italic",
-}
+
 const BOWSER: ImageStyle = {
   alignSelf: "center",
   marginVertical: spacing[5],
   maxWidth: "100%",
 }
-const CONTENT: TextStyle = {
-  ...TEXT,
-  color: "#BAB6C8",
-  fontSize: 15,
-  lineHeight: 22,
-  marginBottom: spacing[5],
+
+const FORGET_CONTAINER: ViewStyle = {
+  alignContent: "center",
+  justifyContent: "space-between",
+  flexDirection: "row"
 }
+
+const FORGET_LEFT: ViewStyle = {
+  flexDirection: "row",
+  justifyContent: 'flex-start',
+  backgroundColor: null,
+}
+
+const FORGET_RIGHT: ViewStyle = {
+  flexDirection: "row",
+  justifyContent: 'flex-end',
+  backgroundColor: null,
+}
+
+const FORGET_TEXT: TextStyle = {
+  color: "#8cb1c1",
+  fontSize: 13,
+  fontFamily: typography.primary,
+  flex: 0,
+  padding: null,
+  margin: null
+}
+
 const CONTINUE: ViewStyle = {
   paddingVertical: spacing[4],
   paddingHorizontal: spacing[4],
-  backgroundColor: "#5D2555",
+  backgroundColor: "#3d9da3",
+  borderRadius: 10
 }
-const CONTINUE_TEXT: TextStyle = {
+
+const LOGIN_TEXT: TextStyle = {
   ...TEXT,
-  ...BOLD,
-  fontSize: 13,
+  ...MEDIUM,
+  fontSize: 16,
   letterSpacing: 2,
 }
-const FOOTER: ViewStyle = { backgroundColor: "#20162D" }
+const FOOTER: ViewStyle = { backgroundColor: null }
 const FOOTER_CONTENT: ViewStyle = {
   paddingVertical: spacing[4],
   paddingHorizontal: spacing[4],
@@ -80,40 +100,45 @@ export const WelcomeScreen = observer(function WelcomeScreen() {
   const navigation = useNavigation()
   const nextScreen = () => navigation.navigate("demo")
 
-  const [text, setText] = React.useState('')
+  const [username, setUsername] = React.useState('')
+  const [password, setPassword] = React.useState('')
 
-  const onChangeText = text => setText(text)
+  const onChangeUsername = username => setUsername(username)
+  const onChangePassword = password => setPassword(password)
 
- const hasErrors = () => {
-   return !text.includes('@')
- }
+  const passwordHasErrors = () => {
+    return password.includes('@')
+  }
 
   return (
     <View style={FULL}>
-      <Wallpaper />
       <Screen style={CONTAINER} preset="scroll" backgroundColor={color.transparent}>
-        <Header headerTx="welcomeScreen.poweredBy" style={HEADER} titleStyle={HEADER_TITLE} />
-        <TextInput label="Email" value={text} onChangeText={onChangeText} />
-        <HelperText type="error" visible={hasErrors()}>
+        <Header headerTx="" style={HEADER}/>
+        <Image source={binjiLogo} style={BOWSER} />
+        <TextInput style={INPUT_TEXT} label="Username" value={username} onChangeText={onChangeUsername} theme={INPUT_THEME} />
+        <TextInput style={INPUT_TEXT} label="Password" value={password} onChangeText={onChangePassword} theme={INPUT_THEME} />
+        <HelperText type="error" visible={passwordHasErrors()}>
           Email address is invalid!
         </HelperText>
-        <Text style={TITLE} preset="header" tx="welcomeScreen.readyForLaunch" />
-        <Image source={bowserLogo} style={BOWSER} />
-        <Text style={CONTENT}>
-          This probably isn't what your app is going to look like. Unless your designer handed you
-          this screen and, in that case, congrats! You're ready to ship.
-        </Text>
-        <Text style={CONTENT}>
-          For everyone else, this is where you'll see a live preview of your fully functioning app
-          using Ignite.
-        </Text>
+        <View style={FORGET_CONTAINER}>
+          <Button
+            style={FORGET_LEFT}>
+            {/*  onPress={nextScreen} */}
+            <Text tx="loginScreen.forgetName" style={FORGET_TEXT} />
+          </Button>
+          <Button
+            style={FORGET_RIGHT}>
+            {/* onPress={nextScreen} */}
+            <Text tx="loginScreen.forgetPassword" style={FORGET_TEXT} />
+          </Button>
+        </View>
       </Screen>
       <SafeAreaView style={FOOTER}>
         <View style={FOOTER_CONTENT}>
           <Button
             style={CONTINUE}
-            textStyle={CONTINUE_TEXT}
-            tx="welcomeScreen.continue"
+            textStyle={LOGIN_TEXT}
+            tx="loginScreen.login"
             onPress={nextScreen}
           />
         </View>
