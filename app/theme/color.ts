@@ -27,27 +27,32 @@ export const color = {
   /**
    * The main tinting color.
    */
-  primary: palette.orange,
+  // primary: palette.orange,
   /**
    * The main tinting color, but darker.
    */
-  primaryDarker: palette.orangeDarker,
+  // primaryDarker: palette.orangeDarker,
   /**
    * A subtle color used for borders and lines.
    */
-  line: palette.offWhite,
+  // line: palette.offWhite,
   /**
    * The default color of text in many components.
    */
-  text: palette.white,
+  text: palette.slate,
   /**
-   * Secondary information.
+   * button background.
    */
-  dim: palette.lightGrey,
+  button: palette.seaTwo,
+
+  /**
+   * forget button background.
+   */
+  forgetButtonText: palette.blueyGrey,
   /**
    * Error messages and icons.
    */
-  error: palette.angry,
+  error: palette.bloodOrange,
 
   /**
    * Storybook background for Text stories, or any stories where

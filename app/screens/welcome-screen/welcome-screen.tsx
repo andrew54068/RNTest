@@ -1,12 +1,17 @@
-import React from "react"
-import { View, Image, ViewStyle, TextStyle, ImageStyle, SafeAreaView, ColorValue } from "react-native"
+import React, { useEffect, useState } from "react"
+import { View, Image, ViewStyle, TextStyle, ImageStyle, SafeAreaView, ColorValue, ActivityIndicator, Alert } from "react-native"
 import { useNavigation } from "@react-navigation/native"
 import { observer } from "mobx-react-lite"
-import { Button, Header, Screen, Text, Wallpaper } from "../../components"
+import { Button, Header, Screen, Text } from "../../components"
 import { color, spacing, typography } from "../../theme"
 import { HelperText, TextInput } from 'react-native-paper'
-import { Colors } from "react-native/Libraries/NewAppScreen"
 import { Theme } from "react-native-paper/lib/typescript/src/types"
+import { Api } from "../../services/api"
+import * as Types from "../../services/api/api.types"
+// import { uuid } from 'react-native-uuid'
+// var uuid = require('react-native-uuid')
+var uuid = require('react-native-uuid')
+
 const binjiLogo = require("./BinjiLogo.png")
 
 const slate: ColorValue = "#3e5968"
@@ -16,6 +21,7 @@ const CONTAINER: ViewStyle = {
   backgroundColor: color.transparent,
   paddingHorizontal: spacing[4],
   justifyContent: "flex-start",
+  flex: 1,
 }
 const TEXT: TextStyle = {
   color: color.palette.white,
@@ -25,14 +31,15 @@ const TEXT: TextStyle = {
 const INPUT_TEXT: ViewStyle = {
   backgroundColor: null,
   marginTop: spacing[5],
-  // borderColor: color.error
 }
 
 const INPUT_THEME: Theme = {
   roundness: 50,
   colors: {
     primary: slate,
-    text: cloudyBlue,
+    text: slate,
+    error: color.error,
+    placeholder: cloudyBlue
   }
 }
 
@@ -44,7 +51,7 @@ const HEADER: TextStyle = {
   paddingHorizontal: 0,
 }
 
-const BOWSER: ImageStyle = {
+const ICON: ImageStyle = {
   alignSelf: "center",
   marginVertical: spacing[5],
   maxWidth: "100%",
@@ -69,7 +76,7 @@ const FORGET_RIGHT: ViewStyle = {
 }
 
 const FORGET_TEXT: TextStyle = {
-  color: "#8cb1c1",
+  color: color.forgetButtonText,
   fontSize: 13,
   fontFamily: typography.primary,
   flex: 0,
@@ -80,7 +87,7 @@ const FORGET_TEXT: TextStyle = {
 const CONTINUE: ViewStyle = {
   paddingVertical: spacing[4],
   paddingHorizontal: spacing[4],
-  backgroundColor: "#3d9da3",
+  backgroundColor: color.button,
   borderRadius: 10
 }
 
@@ -96,6 +103,21 @@ const FOOTER_CONTENT: ViewStyle = {
   paddingHorizontal: spacing[4],
 }
 
+const LOADING: ViewStyle = {
+  position: 'absolute',
+  left: 0,
+  right: 0,
+  top: 0,
+  bottom: 0,
+  justifyContent: 'center',
+  alignItems: 'center',
+}
+
+export const DEFAULT_API_CONFIG: ApiConfig = {
+  url: "https://pay-dev.binji.co/api",
+  timeout: 15 * 60,
+}
+
 export const WelcomeScreen = observer(function WelcomeScreen() {
   const navigation = useNavigation()
   const nextScreen = () => navigation.navigate("demo")
@@ -103,18 +125,48 @@ export const WelcomeScreen = observer(function WelcomeScreen() {
   const [username, setUsername] = React.useState('')
   const [password, setPassword] = React.useState('')
 
-  const onChangeUsername = username => setUsername(username)
-  const onChangePassword = password => setPassword(password)
+  const onChangeUsername = (username: React.SetStateAction<string>) => setUsername(username)
+  const onChangePassword = (password: React.SetStateAction<string>) => setPassword(password)
 
   const passwordHasErrors = () => {
     return password.includes('@')
   }
 
+  const [isLoading, setLoading] = useState(false)
+
+  const callApi = () => {
+    setLoading(true)
+
+    const api = new Api()
+    api.setup()
+
+    api.login(uuid.v1(), username, password)
+      .then(result => Alert.alert(result.kind))
+      .catch((error) => console.error(error))
+      .finally(() => setLoading(false))
+
+    // fetch('https://pay-dev.binji.co/api/user/signIn', {
+    //   method: 'POST',
+    //   headers: {
+    //     Accept: 'application/json',
+    //     'Content-Type': 'application/json'
+    //   },
+    //   body: JSON.stringify({
+    //     deviceUUID: uuid.v1(),
+    //     password: password,
+    //     userName: username,
+    //   })
+    // })
+  }
+
   return (
     <View style={FULL}>
+      <View style={LOADING}>
+        { isLoading ? <ActivityIndicator/> : null }
+      </View>
       <Screen style={CONTAINER} preset="scroll" backgroundColor={color.transparent}>
         <Header headerTx="" style={HEADER}/>
-        <Image source={binjiLogo} style={BOWSER} />
+        <Image source={binjiLogo} style={ICON} />
         <TextInput style={INPUT_TEXT} label="Username" value={username} onChangeText={onChangeUsername} theme={INPUT_THEME} />
         <TextInput style={INPUT_TEXT} label="Password" value={password} onChangeText={onChangePassword} theme={INPUT_THEME} />
         <HelperText type="error" visible={passwordHasErrors()}>
@@ -139,7 +191,7 @@ export const WelcomeScreen = observer(function WelcomeScreen() {
             style={CONTINUE}
             textStyle={LOGIN_TEXT}
             tx="loginScreen.login"
-            onPress={nextScreen}
+            onPress={ callApi }
           />
         </View>
       </SafeAreaView>

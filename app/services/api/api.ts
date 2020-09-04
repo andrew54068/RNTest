@@ -99,4 +99,36 @@ export class Api {
       return { kind: "bad-data" }
     }
   }
+
+  async login(uuid: string, name: string, password: string): Promise<Types.LoginResult> {
+    // make the api call
+    const response: ApiResponse<any> = await this.apisauce
+      .post('user/signIn',
+        {
+          deviceUUID: uuid,
+          userName: name,
+          password: password,
+        }
+      )
+
+    // the typical ways to die when calling an api
+    if (!response.ok) {
+      const problem = getGeneralApiProblem(response)
+      if (problem) return problem
+    }
+
+    // transform the data into the format we are expecting
+    try {
+      const resultData: Types.LoginData = {
+        finishedRegister: response.data.finishedRegister,
+        isNewDevice: response.data.isNewDevice,
+        mobile: response.data.mobile,
+        newDeviceToken: response.data.newDeviceToken,
+        refreshToken: response.data.refreshToken,
+      }
+      return { kind: "ok", data: resultData }
+    } catch {
+      return { kind: "bad-data" }
+    }
+  }
 }
